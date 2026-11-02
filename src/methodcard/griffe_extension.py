@@ -20,6 +20,10 @@ from methodcard.render import markdown
 #: Where the cards are stored in ``obj.extra``.
 NAMESPACE = "methodcard"
 
+#: Class attributes that only declare the card: left out of the API reference, where the
+#: "Numerics" section shows them.
+CARD_ATTRIBUTES = (*FIELDS, "symbolic")
+
 
 def _is_method_decorator(node: ast.expr) -> TypeGuard[ast.Call]:
     """Whether a decorator is a call of ``method`` (or ``methodcard.method``)."""
@@ -108,6 +112,11 @@ def attach(obj: Object, fields: dict[str, Any]) -> MethodCard | None:
         logger.warning("methodcard: %s", error)
         return None
     obj.extra[NAMESPACE] = {"card": card.to_dict(), "kind": obj.kind.value}
+    if obj.is_class:
+        for name in CARD_ATTRIBUTES:
+            member = obj.members.get(name)
+            if member is not None and not member.is_alias and member.is_attribute:
+                del obj.members[name]
     section = markdown(card)
     if obj.docstring:
         obj.docstring.value = f"{doc.rstrip()}\n\n{section}"

@@ -17,6 +17,8 @@ format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `methodcard.testing.method_suite`: generated tests for a package's cards (SymPy rules,
   orders of convergence, docs against runtime); `Rule`, `ConvergenceProblem`, `observed_order`.
 - Docs: the "Method cards" notebook and the design page.
+- The griffe extension leaves the attributes that declare a card (`equations`, `order`, ...)
+  out of the API reference; the "Numerics" section shows them.
 
 ### Removed
 

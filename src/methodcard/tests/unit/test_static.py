@@ -40,6 +40,11 @@ def test_docstrings_get_the_numerics_section():
     assert root["schemes.drift"].extra[NAMESPACE]["kind"] == "function"
     assert NAMESPACE not in root["schemes.Scheme"].extra
     assert NAMESPACE not in root["schemes.SlowDrift"].extra
+    # the attributes that declare the card are shown by the Numerics section instead
+    assert not {"equations", "order", "components", "lean_theorems", "symbolic"} & set(
+        leapfrog.members
+    )
+    assert "convergence_problem" in leapfrog.members
 
 
 def test_export_and_cli(tmp_path, capsys):
