@@ -5,7 +5,8 @@ from __future__ import annotations
 import pytest
 import scope_profiler as sp
 
-from methodcard.main import main
+from methodcard.export import export
+from methodcard.tests.conftest import DATA
 
 
 @pytest.fixture(autouse=True)
@@ -21,7 +22,7 @@ def _region_names(**setup_kwargs) -> set[str]:
     sp.setup(output=None, **setup_kwargs)
     # an application region, recorded either way
     with sp.region("user.run"):
-        main()
+        export("toymethods", [DATA])
     results = sp.finalize(verbose=False, return_results=True)
     return set(results.region_names)
 
@@ -32,4 +33,4 @@ def test_regions_are_off_by_default() -> None:
 
 @pytest.mark.parametrize("tags", [["methodcard"], ["*"]])
 def test_enabling_the_tag_records_the_regions(tags: list[str]) -> None:
-    assert _region_names(enable_tags=tags) == {"methodcard.main", "user.run"}
+    assert _region_names(enable_tags=tags) == {"methodcard.export", "user.run"}

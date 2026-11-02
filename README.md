@@ -11,61 +11,47 @@ analysis](https://github.com/max-models/methodcard/actions/workflows/static_anal
 [![PyPI](https://img.shields.io/pypi/v/methodcard.png)](https://pypi.org/project/methodcard/)
 [![Python](https://img.shields.io/pypi/pyversions/methodcard.png)](https://pypi.org/project/methodcard/)
 
-Template repository for Python projects: a `src/` package with a console
-entry point, `pytest` tests, GitHub Actions for tests, static analysis,
-example notebooks, documentation and PyPI publishing, and an
-[Astro](https://astro.build/) +
-[Starlight](https://starlight.astro.build/) documentation site.
+The math of each numerical method, declared once and shown in its docs
+and tests.
+
+A class (with the `NumericalMethod` mixin) or a function (with the
+`@method` decorator) declares its equations, order of accuracy,
+assumptions and references, next to the code:
+
+``` python
+from methodcard import NumericalMethod
+
+
+class Drift(Propagator, NumericalMethod):
+    """Advance positions at fixed velocity."""
+
+    equations = {"update": r"x^{n+1} = x^n + v^n \Delta t"}
+    assumptions = ("velocity constant over the step",)
+```
+
+- **Jupyter and terminal**: a method renders its card in a notebook;
+  `describe()` prints it.
+- **Docs**: a griffe extension adds a “Numerics” section to each
+  method’s API page, and `methodcard export` gives the catalogue of the
+  shared
+  [starlight-theme](https://github.com/max-models/starlight-theme)
+  (`defineDocs({ methodcard: true })`), both without importing the code.
+- **Tests**: `TestMethodCards = method_suite("mypackage")` checks every
+  card: SymPy rules against the implementation, observed against
+  declared orders, and the docs against the runtime.
 
 Documentation: <https://max-models.github.io/methodcard/>
 
-## Use the template
-
-Create a repository from this template, then rename the package:
-
-``` bash
-bash setup_project.sh my-app
-rm setup_project.sh
-```
-
-This replaces `methodcard` with `my-app` everywhere, moves
-`src/app` to `src/my_app`, and points the entry point, tests and docs at
-it.
-
 ## Install
 
-With [uv](https://docs.astral.sh/uv/):
+``` bash
+pip install methodcard            # or methodcard[symbolic] for the SymPy checks
+```
+
+For development, with [uv](https://docs.astral.sh/uv/):
 
 ``` bash
 make install    # uv sync --extra dev, plus the pre-commit hooks
-uv run methodcard
-```
-
-Or create and activate a Python environment (3.10 or newer):
-
-``` bash
-python -m venv env
-source env/bin/activate
-pip install --upgrade pip
-```
-
-Install the code and requirements with pip:
-
-``` bash
-pip install -e .
-```
-
-Run the code with:
-
-``` bash
-methodcard
-```
-
-The `test`, `docs` and `dev` extras install the test runner, the
-documentation tooling and the linters:
-
-``` bash
-pip install -e ".[dev]"
 ```
 
 ## Development
@@ -87,15 +73,13 @@ Commits](https://www.conventionalcommits.org/); see
 
 The documentation in `docs/` is an Astro + Starlight site: hand-written
 pages, the notebooks in `tutorials/` executed and published as pages,
-complete Python scripts in `examples/` published with their plots, and
-the API reference generated from the docstrings with
+and the API reference generated from the docstrings with
 [starlight-pydocs](https://ewels.github.io/starlight-pydocs/). It needs
 Node 22 or newer.
 
 ``` bash
 make docs-install     # npm packages and the Python docs extra
 make docs-notebooks   # execute tutorials/*.ipynb and convert them to pages
-make docs-examples    # run examples/*.py and publish their plots
 make docs-dev         # live preview at http://localhost:4321/methodcard/
 make docs-build       # the static site in docs/dist
 ```
@@ -112,9 +96,10 @@ make readme
 ## Releases
 
 Before merging a release to `main`, update the version in
-`pyproject.toml`, `src/methodcard/__init__.py` and `CITATION.cff` (including
-its release date), and add the release notes to `CHANGELOG.md`. The push
-to `main` creates a GitHub release with a `vX.Y.Z` tag and publishes the
-package to PyPI with trusted publishing (OIDC). The one-time PyPI and
-GitHub configuration is described in the [publishing
+`pyproject.toml`, `src/methodcard/__init__.py` and `CITATION.cff`
+(including its release date), and add the release notes to
+`CHANGELOG.md`. The push to `main` creates a GitHub release with a
+`vX.Y.Z` tag and publishes the package to PyPI with trusted publishing
+(OIDC). The one-time PyPI and GitHub configuration is described in the
+[publishing
 tutorial](https://max-models.github.io/methodcard/development/publishing/).

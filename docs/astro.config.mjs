@@ -6,7 +6,7 @@ import { defineDocs } from '@max-models/starlight-theme';
 export default defineDocs({
 	repo: 'methodcard',
 	title: 'methodcard',
-	description: 'Template repository for Python projects.',
+	description: 'The math of each numerical method, declared once and shown in its docs and tests.',
 	pythonPackage: 'methodcard',
 	nav: [
 		{ label: 'Getting started', link: '/getting-started/installation/' },
@@ -26,12 +26,12 @@ export default defineDocs({
 			label: 'Examples',
 			items: [
 				{ autogenerate: { directory: 'examples' } },
-				{ label: 'Scripts', items: [{ autogenerate: { directory: 'example-scripts' } }] },
 			],
 		},
 		{
 			label: 'Development',
 			items: [
+				{ label: 'Design', slug: 'development/design' },
 				{ label: 'Building the docs', slug: 'development/docs' },
 				{ label: 'Publishing', slug: 'development/publishing' },
 			],

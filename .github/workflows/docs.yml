@@ -24,14 +24,11 @@ jobs:
   docs:
     uses: max-models/starlight-theme/.github/workflows/docs.yml@v0.6.0
     with:
-      pre-build: uv run python docs/tools/examples.py
       smoke-paths: |
         getting-started/installation/index.html
         examples/index.html
-        examples/example-tutorial/index.html
-        example-scripts/index.html
-        example-scripts/sine-wave/index.html
+        examples/method-cards/index.html
         api/methodcard/index.html
-        api/methodcard/main/index.html
-        examples/example-tutorial/example_tutorial.ipynb
-        example-scripts/sine-wave/plot-1.png
+        api/methodcard/card/index.html
+        development/design/index.html
+        examples/method-cards/method_cards.ipynb
