@@ -5,9 +5,9 @@ requires = [ "setuptools", "wheel" ]
 [project]
 name = "methodcard"
 version = "0.1.0"
-description = "Template python repository."
+description = "The math of each numerical method, declared once and shown in its docs and tests."
 readme = "README.md"
-keywords = [ "python" ]
+keywords = [ "numerical methods", "documentation", "verification", "griffe", "pytest" ]
 license = { file = "LICENSE.txt" }
 authors = [ { name = "Max" } ]
 requires-python = ">=3.10"
@@ -23,6 +23,7 @@ classifiers = [
 # PyPI rejects direct references (name @ git+...), so only version ranges go here; the
 # max-models packages come from their devel branches through [tool.uv.sources]
 dependencies = [
+  "griffe>=2",
   "numpy",
   "scope-profiler>=0.7.5",
 ]
@@ -35,15 +36,15 @@ optional-dependencies.dev = [
   "methodcard[docs,test]",
 ]
 optional-dependencies.docs = [
-  "griffe",
   "ipykernel",
   "matplotlib>=3.10.9",
   "nbclient>=0.11",
   "nbformat>=5.11.1",
 ]
-optional-dependencies.test = [ "pytest", "pytest-cov" ]
+optional-dependencies.symbolic = [ "sympy" ]
+optional-dependencies.test = [ "pytest", "pytest-cov", "sympy" ]
 urls.Source = "https://github.com/max-models/methodcard"
-scripts.methodcard = "methodcard.main:main"
+scripts.methodcard = "methodcard.export:main"
 
 [tool.setuptools]
 package-data."*" = [ "py.typed" ]
@@ -70,7 +71,8 @@ typeCheckingMode = "standard"
 [tool.pytest]
 ini_options.pythonpath = [ "src" ]
 ini_options.testpaths = [ "src" ]
-ini_options.addopts = "-ra"
+ini_options.addopts = "-ra -p pytester"
+ini_options.markers = [ "convergence: an order-of-accuracy test of a method card (can be slow)" ]
 
 [tool.coverage]
 run.omit = [ "*/tests/*" ]

@@ -10,9 +10,6 @@ The site in `docs/` is built with [Astro](https://astro.build/) and
 - **Examples**, converted from the Jupyter notebooks in `tutorials/` by `starlight-notebooks`
   (the `section` setting in `docs/package.json` publishes them under `examples/`). Each
   notebook is executed and its outputs (text, images, tables) are written into an MDX page.
-- **Example scripts**, a "Scripts" group of the Examples, built from the Python scripts in
-  `examples/` by `docs/tools/examples.py`. Each page shows the module docstring, the complete
-  source file, and its Matplotlib plots.
 - **API reference**, generated from the docstrings by
   [starlight-pydocs](https://ewels.github.io/starlight-pydocs/), one page per module.
 
