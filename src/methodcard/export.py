@@ -25,6 +25,8 @@ def _objects(obj: Any) -> Iterator[Any]:
             continue
         if member.is_module or member.is_class or member.is_function:
             yield from _objects(member)
+        elif member.is_attribute:  # a property with a card
+            yield member
 
 
 @sp.profile("methodcard.export", tags=PROFILE_TAGS)
@@ -39,7 +41,7 @@ def export(package: str, search: Sequence[str | Path] = ("src",)) -> dict[str, A
 
     Returns:
         ``{"schema", "package", "cards"}``; each card is ``MethodCard.to_dict()`` with
-        ``kind`` (``"class"`` or ``"function"``), ``module``, ``filepath`` (relative to
+        ``kind`` (``"class"``, ``"function"`` or ``"attribute"`` for a property), ``module``, ``filepath`` (relative to
         the search path) and ``lineno``.
     """
     import griffe

@@ -12,13 +12,17 @@ from __future__ import annotations
 import ast
 from typing import Any, TypeGuard
 
-from griffe import Class, Docstring, Extension, Function, Object, logger
+from griffe import Attribute, Class, Docstring, Extension, Function, Object, logger
 
 from methodcard.card import FIELDS, MethodCard
 from methodcard.render import markdown
 
 #: Where the cards are stored in ``obj.extra``.
 NAMESPACE = "methodcard"
+
+#: Class attributes that only declare the card: left out of the API reference, where the
+#: "Numerics" section shows them.
+CARD_ATTRIBUTES = (*FIELDS, "symbolic")
 
 
 def _is_method_decorator(node: ast.expr) -> TypeGuard[ast.Call]:
@@ -108,6 +112,11 @@ def attach(obj: Object, fields: dict[str, Any]) -> MethodCard | None:
         logger.warning("methodcard: %s", error)
         return None
     obj.extra[NAMESPACE] = {"card": card.to_dict(), "kind": obj.kind.value}
+    if obj.is_class:
+        for name in CARD_ATTRIBUTES:
+            member = obj.members.get(name)
+            if member is not None and not member.is_alias and member.is_attribute:
+                del obj.members[name]
     section = markdown(card)
     if obj.docstring:
         obj.docstring.value = f"{doc.rstrip()}\n\n{section}"
@@ -136,6 +145,16 @@ class MethodcardExtension(Extension):
             if _is_method_decorator(decorator):
                 self._found.append((func, _fields_from_call(func, decorator)))
                 return
+
+    def on_attribute_instance(
+        self, *, node: ast.AST | Any, attr: Attribute, **kwargs: Any
+    ) -> None:
+        """A property decorated with ``@method(...)`` (griffe makes it an attribute)."""
+        if isinstance(node, ast.FunctionDef):
+            for decorator in node.decorator_list:
+                if _is_method_decorator(decorator):
+                    self._found.append((attr, _fields_from_call(attr, decorator)))
+                    return
 
     def on_class_members(
         self, *, node: ast.AST | Any, cls: Class, **kwargs: Any

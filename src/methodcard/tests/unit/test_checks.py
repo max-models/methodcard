@@ -42,6 +42,7 @@ def test_check_rule():
     check_rule(Rule(x - y, ranges={"x": (5, 6)}), lambda x, y: x - y)
     check_rule(Rule(x**2, implementation=lambda x: x * x), None)
     check_rule(sympy.Integer(3), lambda: 3.0)
+    check_rule(sympy.erf(x), lambda x: __import__("math").erf(x))
     with pytest.raises(AssertionError):
         check_rule(x * y, lambda x, y: x * y * (1 + 1e-6))
     with pytest.raises(TypeError, match="needs Rule"):
