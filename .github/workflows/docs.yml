@@ -31,7 +31,7 @@ jobs:
         examples/example-tutorial/index.html
         example-scripts/index.html
         example-scripts/sine-wave/index.html
-        api/app/index.html
-        api/app/main/index.html
+        api/methodcard/index.html
+        api/methodcard/main/index.html
         examples/example-tutorial/example_tutorial.ipynb
         example-scripts/sine-wave/plot-1.png
