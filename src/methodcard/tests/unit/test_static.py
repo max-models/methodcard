@@ -50,10 +50,11 @@ def test_docstrings_get_the_numerics_section():
 def test_export_and_cli(tmp_path, capsys):
     data = export("toymethods", [DATA])
     assert data["schema"] == SCHEMA
-    assert [card["name"].rsplit(".", 1)[-1] for card in data["cards"]] == [
+    assert [card["name"].split(".", 2)[-1] for card in data["cards"]] == [
         "Drift",
         "Kick",
         "Leapfrog",
+        "Particle.energy",
         "drift",
     ]
     assert data["cards"][0]["filepath"] == "toymethods/schemes.py"

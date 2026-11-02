@@ -19,6 +19,8 @@ format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Docs: the "Method cards" notebook and the design page.
 - The griffe extension leaves the attributes that declare a card (`equations`, `order`, ...)
   out of the API reference; the "Numerics" section shows them.
+- Cards on properties (`@property` over `@method(...)`), which griffe sees as attributes.
+- SymPy rules with special functions (`erf`, ...): `lambdify` uses SciPy when it is installed.
 
 ### Removed
 

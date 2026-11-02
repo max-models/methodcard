@@ -121,7 +121,14 @@ def check_rule(
         raise TypeError("a rule on a class needs Rule(expr, implementation=...)")
     symbols = sorted(rule.expr.free_symbols, key=lambda symbol: symbol.name)
     names = [symbol.name for symbol in symbols]
-    expected = sympy.lambdify(symbols, rule.expr, modules="numpy")
+    # SciPy for the special functions (erf, ...) when it is there
+    try:
+        import scipy  # noqa: F401
+
+        modules = ["scipy", "numpy"]
+    except ImportError:  # pragma: no cover - SciPy is installed with the test extra
+        modules = ["numpy"]
+    expected = sympy.lambdify(symbols, rule.expr, modules=modules)
     rng = np.random.default_rng(seed)
     inputs = {
         name: rng.uniform(*rule.ranges.get(name, (0.5, 2.0)), size=samples)

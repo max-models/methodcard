@@ -62,6 +62,20 @@ def _oscillator_error(dt: float) -> dict[str, float]:
     return {"x": abs(xs - math.cos(1.0)), "v": abs(vs + math.sin(1.0))}
 
 
+class Particle:
+    """A particle with a kinetic energy."""
+
+    def __init__(self, v: float) -> None:
+        """Store the speed."""
+        self.v = v
+
+    @property
+    @method(equations={"energy": r"E = \tfrac{1}{2} v^2"})
+    def energy(self) -> float:
+        """The kinetic energy per unit mass."""
+        return 0.5 * self.v**2
+
+
 class Leapfrog(Scheme):
     """Kick, drift, kick."""
 

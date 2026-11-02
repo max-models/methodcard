@@ -15,6 +15,7 @@ def test_registry_is_keyed_per_package():
         "toymethods.schemes.Kick",
         "toymethods.schemes.Drift",
         "toymethods.schemes.Leapfrog",
+        "toymethods.schemes.Particle.energy",
     }
     assert registry("toymethods")["toymethods.schemes.Kick"] is Kick
     assert set(registry("toymethods")) <= set(registry())
