@@ -60,6 +60,16 @@ class MethodCard:
     Build it with :meth:`MethodCard.build`, which validates the fields; the mixin
     :class:`~methodcard.NumericalMethod` and the decorator :func:`~methodcard.method`
     do that for you.
+
+    Attributes:
+        name: The qualified name, ``<module>.<qualname>``.
+        equations: Named LaTeX equations, e.g. ``{"update": r"x^{n+1} = x^n"}``.
+        order: The expected order of accuracy, one per variable if they differ.
+        assumptions: Preconditions in plain words, such as ``"uniform grid"``.
+        references: Papers or textbook sections.
+        lean_theorems: Fully qualified names of Lean theorems about the scheme.
+        components: For a composite scheme, the qualified names of its parts.
+        summary: The first line of the docstring.
     """
 
     name: str
@@ -70,14 +80,6 @@ class MethodCard:
     lean_theorems: tuple[str, ...] = ()
     components: tuple[str, ...] = ()
     summary: str = ""
-    """The qualified name, ``<module>.<qualname>``."""
-    """Named LaTeX equations, e.g. ``{"update": r"x^{n+1} = x^n + v^n \\Delta t"}``."""
-    """The expected order of accuracy, one per variable if they differ."""
-    """Preconditions in plain words, such as ``"uniform grid"``."""
-    """Papers or textbook sections."""
-    """Fully qualified names of Lean theorems about the scheme."""
-    """For a composite scheme: the qualified names of the methods it is built from."""
-    """The first line of the docstring."""
 
     @classmethod
     def build(

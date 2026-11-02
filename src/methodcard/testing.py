@@ -33,6 +33,14 @@ def _search_path(package: str) -> Path:
     return Path(next(iter(spec.submodule_search_locations))).parent
 
 
+def _rule_keys(entry: Entry) -> list[str]:
+    """The keys of an entry's rules; none if they need SymPy and it is missing."""
+    try:
+        return list(entry.rules())
+    except ImportError:
+        return []
+
+
 def method_suite(package: str) -> type:
     """A pytest test class checking every card of a package.
 
@@ -45,7 +53,7 @@ def method_suite(package: str) -> type:
     failed = load(package)
     found = entries(package)
     ids = list(found)
-    rules = [(name, key) for name, entry in found.items() for key in entry.symbolic]
+    rules = [(name, key) for name, entry in found.items() for key in _rule_keys(entry)]
     problems = [name for name, entry in found.items() if entry.problem is not None]
     static: dict[str, dict] = {}
 
@@ -92,7 +100,7 @@ def method_suite(package: str) -> type:
             pytest.importorskip("sympy")
             entry: Entry = found[name]
             assert key in entry.card.equations, f"{name}: rule {key!r} has no equation"
-            check_rule(entry.symbolic[key], entry.obj)
+            check_rule(entry.rules()[key], entry.obj)
 
         @pytest.mark.convergence
         @pytest.mark.parametrize("name", problems)

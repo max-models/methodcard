@@ -109,7 +109,9 @@ def test_mixin_needs_equations():
 def test_decorator_validates_components():
     with pytest.raises(TypeError, match="components must be a tuple"):
         method(equations={"update": "x"}, components="Kick")(lambda: None)
-    with pytest.raises(TypeError, match="symbolic must be a dict"):
+    with pytest.raises(
+        TypeError, match="symbolic must be a dict of SymPy rules or a function"
+    ):
         method(equations={"update": "x"}, symbolic=["x"])(lambda: None)
 
 
@@ -145,3 +147,19 @@ def test_load_reports_failed_modules(tmp_path, monkeypatch):
 
 def test_version():
     assert methodcard.__version__
+
+
+def test_lazy_rules():
+    from methodcard.testing import _rule_keys
+
+    assert list(entries()["toymethods.schemes.Drift"].rules()) == ["update"]
+
+    def missing():
+        raise ImportError("no sympy")
+
+    @method(equations={"update": "x"}, symbolic=missing)
+    def needs_sympy():
+        """Rules that need SymPy."""
+
+    name = f"{__name__}.test_lazy_rules.<locals>.needs_sympy"
+    assert _rule_keys(entries()[name]) == []

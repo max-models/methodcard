@@ -13,16 +13,26 @@ from methodcard.card import MethodCard
 
 @dataclass(frozen=True)
 class Entry:
-    """A registered method: the object, its card and what only exists at runtime."""
+    """A registered method: the object, its card and what only exists at runtime.
+
+    Attributes:
+        obj: The class or function.
+        card: Its card.
+        symbolic: SymPy rules by equation key (:class:`~methodcard.Rule` or bare
+            expressions), or a function returning them.
+        problem: Returns the :class:`~methodcard.ConvergenceProblem` of the method.
+    """
 
     obj: Any
     card: MethodCard
-    symbolic: Mapping[str, Any] = field(default_factory=dict)
+    symbolic: Mapping[str, Any] | Callable[[], Mapping[str, Any]] = field(
+        default_factory=dict
+    )
     problem: Callable[[], Any] | None = None
-    """The class or function."""
-    """Its card."""
-    """SymPy rules by equation key (:class:`~methodcard.Rule` or bare expressions)."""
-    """Returns the :class:`~methodcard.ConvergenceProblem` of the method."""
+
+    def rules(self) -> Mapping[str, Any]:
+        """The SymPy rules, calling the function that returns them if need be."""
+        return self.symbolic() if callable(self.symbolic) else self.symbolic
 
     @property
     def package(self) -> str:

@@ -17,28 +17,35 @@ class Rule:
     The implementation is called with keyword arguments named after the rule's free
     symbols. A bare SymPy expression in ``symbolic`` stands for ``Rule(expr)``; on a
     function, its symbols are then named after the function's parameters.
+
+    Attributes:
+        expr: The SymPy expression.
+        implementation: Called with the symbols as keywords; the decorated function
+            if left out.
+        ranges: Sampling intervals by symbol name; ``(0.5, 2)`` for the others.
+        rtol: The relative tolerance of the comparison.
     """
 
     expr: Any
     implementation: Callable[..., Any] | None = None
     ranges: Mapping[str, tuple[float, float]] = field(default_factory=dict)
     rtol: float = 1e-10
-    """The SymPy expression."""
-    """Called with the symbols as keywords; the decorated function if left out."""
-    """Sampling intervals by symbol name; ``(0.5, 2)`` for the others."""
-    """The relative tolerance of the comparison."""
 
 
 @dataclass(frozen=True)
 class ConvergenceProblem:
-    """A test problem: the error of a method for a sequence of step sizes."""
+    """A test problem: the error of a method for a sequence of step sizes.
+
+    Attributes:
+        error: The error at one step size, or the errors by variable (keys of
+            ``order``).
+        steps: The step sizes, at least two, best halving each time.
+        tolerance: How far the observed order may be from the declared one.
+    """
 
     error: Callable[[float], float | Mapping[str, float]]
     steps: Sequence[float]
     tolerance: float = 0.1
-    """The error at one step size, or the errors by variable (keys of ``order``)."""
-    """The step sizes, at least two, best halving each time."""
-    """How far the observed order may be from the declared one."""
 
 
 def observed_order(steps: Sequence[float], errors: Sequence[float]) -> float:

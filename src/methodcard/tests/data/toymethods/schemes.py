@@ -35,10 +35,16 @@ class Kick(Scheme):
     }
 
 
+def _drift_rules():
+    """The rules of Drift, built only when the tests ask for them."""
+    return {"update": Rule(x + v * dt, implementation=lambda x, v, dt: x + v * dt)}
+
+
 class Drift(Scheme):
     """Advance positions at fixed velocity."""
 
     equations = {"update": r"x^{n+1} = x^n + v^n \Delta t"}
+    symbolic = staticmethod(_drift_rules)
 
 
 class SlowDrift(Drift):

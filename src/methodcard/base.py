@@ -20,12 +20,16 @@ def _components(items: Sequence[Any], owner: str) -> tuple[str, ...]:
     )
 
 
-def _symbolic(rules: Any, owner: str) -> dict[str, Any]:
-    """Check that the SymPy rules are a dict keyed like the equations."""
+def _symbolic(rules: Any, owner: str) -> Mapping[str, Any] | Callable[[], Any]:
+    """Check that the SymPy rules are a dict, or a function that returns one."""
     if rules is None:
         return {}
+    if callable(rules):
+        return rules
     if not isinstance(rules, Mapping):
-        raise TypeError(f"{owner}: symbolic must be a dict of SymPy rules")
+        raise TypeError(
+            f"{owner}: symbolic must be a dict of SymPy rules or a function"
+        )
     return dict(rules)
 
 
@@ -37,7 +41,7 @@ def method(
     references: Sequence[str] = (),
     lean_theorems: Sequence[str] = (),
     components: Sequence[Any] = (),
-    symbolic: Mapping[str, Any] | None = None,
+    symbolic: Mapping[str, Any] | Callable[[], Mapping[str, Any]] | None = None,
     problem: Callable[[], Any] | None = None,
 ) -> Callable[[T], T]:
     r"""Attach a card to a function or class and register it.
@@ -52,7 +56,8 @@ def method(
         references: Papers or textbook sections.
         lean_theorems: Qualified names of Lean theorems about the scheme.
         components: The methods a composite scheme is built from (objects or names).
-        symbolic: SymPy rules by equation key, checked against the implementation.
+        symbolic: SymPy rules by equation key, checked against the implementation; or
+            a function returning them, so that the package imports SymPy only in tests.
         problem: Returns a :class:`~methodcard.ConvergenceProblem`, checked against ``order``.
 
     Returns:
@@ -101,7 +106,9 @@ class NumericalMethod:
     references: ClassVar[Sequence[str]] = ()
     lean_theorems: ClassVar[Sequence[str]] = ()
     components: ClassVar[Sequence[Any]] = ()
-    symbolic: ClassVar[Mapping[str, Any] | None] = None
+    symbolic: ClassVar[Mapping[str, Any] | Callable[[], Mapping[str, Any]] | None] = (
+        None
+    )
 
     def __init_subclass__(cls, abstract: bool = False, **kwargs: Any) -> None:
         """Validate and register a concrete subclass."""
@@ -127,7 +134,9 @@ class NumericalMethod:
         )
         cls._methodcard = card
         problem = getattr(cls, "convergence_problem", None)
-        register(Entry(cls, card, _symbolic(cls.symbolic, name), problem))
+        register(
+            Entry(cls, card, _symbolic(getattr(cls, "symbolic", None), name), problem)
+        )
 
     @classmethod
     def describe(cls) -> str:
